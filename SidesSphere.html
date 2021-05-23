@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Sphere</title>
+	<style>
+		body {
+			margin: 0;
+		}
+	</style>
+
+</head>
+<body>
+	<button class="button">Change to Voronoi</button>
+
+	<script src="node_modules/three/build/three.js"></script>
+	<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
+	<script src="node_modules/three/examples/js/loaders/OBJLoader.js"></script>
+	<script src="node_modules/three/examples/js/loaders/MTLLoader.js"></script>
+
+	<script>
+
+		const scene = new THREE.Scene();
+		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+		const renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+
+		camera.position.z = 50;
+
+		const geometry = new THREE.BoxGeometry(1, 1, 1)
+		const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+		var controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls.enableDamping = true;
+		controls.campingFactor = 0.25;
+		controls.enableZoom = true;
+
+		var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
+		keyLight.position.set(-100, 0, 100);
+
+		var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75)
+		fillLight.position.set(100, 0, 100);
+
+		var backLight = new THREE.DirectionalLight(0xff0000, 1.0);
+		backLight.position.set(100, 0, -100).normalize();
+
+		scene.add(keyLight);
+		scene.add(fillLight);
+		scene.add(backLight);
+
+
+        const color = 0xFFFFFF;
+        const intensity = 1;
+        const light = new THREE.AmbientLight(color, intensity);
+        scene.add(light);
+
+
+		var mesh1 = null;
+		var mesh2 = null;
+		var mesh3 = null;
+		var mesh4 = null;
+
+		var mtlLoader = new THREE.MTLLoader();
+
+		mtlLoader.load('Sphere/Triangl.mtl', function (materials) {
+
+			materials.preload();
+
+			var objLoader = new THREE.OBJLoader();
+			objLoader.setMaterials(materials);
+
+			objLoader.load('Sphere/SidesTriangl.obj', function (object) {
+
+				mesh1 = object;
+				mesh1.position.y = 0;
+				scene.add(mesh1);
+
+			});
+
+            objLoader.load('Sphere/Triangl.obj', function (object) {
+
+                mesh2 = object;
+                mesh2.position.y = 0;
+                scene.add(mesh2);
+
+			});
+
+            objLoader.load('Sphere/Sphere.obj', function (object) {
+
+                mesh3 = object;
+                mesh3.position.y = 0;
+                scene.add(mesh3);
+
+			});
+
+
+		});
+        mtlLoader.setMaterialOptions({ side: THREE.DoubleSide });//
+
+		const animate = function () {
+			requestAnimationFrame(animate);
+
+			renderer.render(scene, camera);
+		};
+
+		animate();
+
+		var btn = document.querySelector('button');
+		btn.onclick = function () {
+
+			if (btn.textContent === "Change to Voronoi") {
+				scene.remove(mesh1);
+                scene.remove(mesh2);
+				mtlLoader.load('Sphere/Triangl.mtl', function (materials) {
+
+					materials.preload();
+
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials(materials);
+
+					objLoader.load('Sphere/SidesVoronoi.obj', function (object) {
+					
+						mesh1 = object;
+						mesh1.position.y = 0;
+						scene.add(mesh1);
+
+					});
+                    
+                    objLoader.load('Sphere/Voronoi.obj', function (object) {
+
+                        mesh2 = object;
+                        mesh2.position.y = 0;
+                        scene.add(mesh2);
+
+					});
+
+
+                    objLoader.load('D2/Voronoi2.obj', function (object) {
+
+                        mesh1 = object;
+                        mesh1.position.y = 0;
+                        scene.add(mesh1);
+
+                    });
+
+				});
+
+				const animate = function () {
+					requestAnimationFrame(animate);
+
+					renderer.render(scene, camera);
+				};
+
+				animate();
+				btn.textContent = "Change to Triangl";
+			} else {
+				scene.remove(mesh1);
+				scene.remove(mesh2);
+                scene.remove(mesh4);
+				mtlLoader.load('Sphere/Triangl.mtl', function (materials) {
+
+					materials.preload();
+
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials(materials);
+
+					objLoader.load('Sphere/SidesTriangl.obj', function (object) {
+
+						mesh1 = object;
+						mesh1.position.y = 0;
+						scene.add(mesh1);
+
+					});
+
+                    objLoader.load('Sphere/Triangl.obj', function (object) {
+
+                        mesh2 = object;
+                        mesh2.position.y = 0;
+                        scene.add(mesh2);
+
+                    });
+
+				});
+
+				const animate = function () {
+					requestAnimationFrame(animate);
+
+					renderer.render(scene, camera);
+				};
+
+				animate();
+				btn.textContent = "Change to Voronoi";
+			}
+		}
+
+
+	</script>
+</body>
+</html>
